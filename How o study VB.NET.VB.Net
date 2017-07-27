@@ -1,0 +1,78 @@
+1.Vb.net connection to SQL Server
+Imports System.Data.SqlClient
+
+Public Class Form1
+
+    Dim con As New SqlConnection("Data Source=.\SQLEXPRESS;Initial Catalog=propertystock_db;Integrated Security=True")
+
+    Private Sub login_Button_Click(sender As Object, e As EventArgs) Handles login_Button.Click
+        con.Open()
+        Dim cmd As New SqlCommand("SELECT username,password FROM users Where username=@username and password=@password", con)
+        cmd.Parameters.AddWithValue("@username", username_TextBox.Text)
+        cmd.Parameters.AddWithValue("@password", password_TextBox.Text)
+
+        Dim dr = cmd.ExecuteReader()
+        If dr.HasRows Then
+            MessageBox.Show("Login Successful")
+        Else
+            MessageBox.Show("Login Not successful")
+        End If
+
+        con.Close()
+
+    End Sub
+End Class
+2.How to Insert Sql server
+ -Method1: Insert
+Imports System.Data.SqlClient
+
+Public Class Addphotocopy
+
+    Dim sql_connection As New SqlConnection("Data Source=.\SQLEXPRESS;Initial Catalog=propertystock_db;Integrated Security=True")
+    Private Sub btn_add_Click(sender As Object, e As EventArgs) Handles btn_add.Click
+        Try
+            sql_connection.Open()
+            Dim sql_cmd As New SqlCommand(String.Format("insert into tbl_photocopy values('{0}','{1}','{2}','{3}','{4}')", txt_requestby.Text, cmb_office.Text, txt_filename.Text, txt_qty.Text, cmb_copyby.Text), sql_connection)
+            'Dim sql_cmd As New SqlCommand(String.Format("insert into tbl_photocopy values('{0}','{1}','{2}','{3}','{4}')", txt_requestby.Text, cmb_office.Text, txt_filename.Text, txt_qty.Text, cmb_copyby.Text), sql_connection)
+            sql_cmd.ExecuteNonQuery()
+            sql_connection.Close()
+        Catch ex As Exception
+            MsgBox(ex.Message)
+        End Try
+ -Method2: Insert through Parameter(Standard User)
+   Imports System.Data.SqlClient
+
+Public Class Addphotocopy
+    Dim con As New SqlConnection
+    Private Sub btn_add_Click(sender As Object, e As EventArgs) Handles btn_add.Click
+        Try
+            con.ConnectionString = (connectionString) or("Data Source=.\SQLEXPRESS;Initial Catalog=propertystock_db;Integrated Security=True")
+            con.Open()
+            Dim sqlCommand As New SqlCommand
+            sqlCommand.CommandType = CommandType.Text
+            sqlCommand.Connection = con
+            sqlCommand.CommandText = "INSERT INTO tbl_photocopy (requestby,office,filename,qty,copyby) " & _
+                                    "VALUES (@requestby,@office,@filename,@qty,@copyby)"
+            With sqlCommand.Parameters
+                .AddWithValue("@requestby", txt_requestby.Text)
+                .AddWithValue("@office", cmb_office.SelectedItem)
+                .AddWithValue("@filename", txt_filename.Text)
+                .AddWithValue("@qty", txt_qty.Text)
+                .AddWithValue("@copyby", cmb_copyby.SelectedItem)
+            End With
+            sqlCommand.ExecuteNonQuery()
+            con.Close()
+            MsgBox("success", MsgBoxStyle.Information, "SUCCESSFULLY")
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+    End Sub
+3. How to create Mainform?
+   We use for form manage run on form when you select project building.
+
+4.How to create Module?
+  It is create form for users use project name or System several in one to Developer easy to build and connection the same one use.
+
+    Public connectionString As String = "Data Source=.\SQLEXPRESS;Initial Catalog=propertystock_db;Integrated Security=True"
+End Module
+5.how to vb.net sql to datagridview
